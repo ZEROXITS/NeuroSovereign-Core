@@ -1,7 +1,10 @@
 import os
 import json
 from typing import List, Dict, Any
-from .pc_control import PCControlModule
+try:
+    from .pc_control import PCControlModule
+except ImportError:
+    from pc_control import PCControlModule
 
 class NeuroSovereignAgent:
     """
