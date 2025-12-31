@@ -1,6 +1,7 @@
 import os
 import json
 from typing import List, Dict, Any
+from .pc_control import PCControlModule
 
 class NeuroSovereignAgent:
     """
@@ -9,6 +10,7 @@ class NeuroSovereignAgent:
     """
     def __init__(self, model_name: str = "Llama-3.3-70B-Instruct"):
         self.name = "NeuroSovereign"
+        self.pc_control = PCControlModule()
         self.model_name = model_name
         self.memory = []
         self.tools = self._load_tools()
@@ -18,6 +20,8 @@ class NeuroSovereignAgent:
         """Loads the available tools for the agent."""
         return [
             {"name": "execute_shell", "description": "Executes a shell command on the host system."},
+            {"name": "pc_control_click", "description": "Simulates a mouse click at specific coordinates (x, y)."},
+            {"name": "pc_control_type", "description": "Simulates keyboard typing of a string."},
             {"name": "browser_control", "description": "Interacts with the web browser (navigation, clicking, typing)."},
             {"name": "pc_control", "description": "Simulates mouse and keyboard inputs for desktop applications."},
             {"name": "live_data_stream", "description": "Connects to real-time data sources for live interaction."}
@@ -48,6 +52,15 @@ class NeuroSovereignAgent:
     def _execute_plan(self, plan: List[str]) -> str:
         """Executes the steps in the plan."""
         for step in plan:
+            # Mock execution logic for demonstration
+            if "pc_control_click" in step:
+                print(f"Executing PC Control Action: Click at (500, 500)")
+                # self.pc_control.move_and_click(500, 500)
+            elif "pc_control_type" in step:
+                print(f"Executing PC Control Action: Typing 'Hello World'")
+                # self.pc_control.type_text("Hello World")
+            else:
+                print(f"Executing: {step}")
             print(f"Executing: {step}")
         return "Task completed successfully."
 
