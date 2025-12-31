@@ -1,37 +1,35 @@
-# NeuroSovereign (السيادة العصبية) 🚀
+# NeuroSovereign Systems: The Future of Autonomous Intelligence
 
-**NeuroSovereign** is an independent, autonomous AI agent designed to be the core of a next-generation AI company. It operates without reliance on centralized APIs (like OpenAI), focusing on full sovereignty, computer control, and live interaction.
+![NeuroSovereign Banner](https://img.shields.io/badge/Status-Active-brightgreen)
+![License](https://img.shields.io/badge/License-Apache%202.0-blue)
+![Version](https://img.shields.io/badge/Version-1.0.0--Alpha-orange)
 
-**NeuroSovereign** هو وكيل ذكاء اصطناعي مستقل بذاته، صُمم ليكون النواة لشركة ذكاء اصطناعي من الجيل القادم. يعمل النظام باستقلالية تامة عن الواجهات البرمجية المركزية، مع التركيز على السيادة الكاملة، التحكم في الحاسوب، والتفاعل الحي.
+**NeuroSovereign Systems** is a next-generation, fully autonomous AI ecosystem designed to achieve true digital sovereignty. Unlike traditional AI models that rely on centralized APIs, NeuroSovereign is built to be independent, self-evolving, and capable of direct interaction with the physical and digital world.
 
-## 🌟 Key Features (المميزات الرئيسية)
+## 🚀 Our Vision
+To create an AI entity that surpasses current limitations, offering a "Sovereign Agent" capable of:
+- **Complete Independence**: No reliance on external paid APIs (OpenAI, Anthropic, etc.).
+- **PC & System Control**: Direct interaction with operating systems, browsers, and desktop applications.
+- **Live Interaction**: Real-time processing of video and audio streams for seamless human-AI collaboration.
+- **Self-Evolution**: The ability to optimize its own code and reasoning patterns over time.
 
-- **Full Sovereignty (السيادة الكاملة)**: Runs on open-source models (Llama 3.3, Qwen) hosted locally.
-- **Computer Use (التحكم في الحاسوب)**: Can interact with the OS, browser, and desktop apps.
-- **Live Interaction (التفاعل الحي)**: Capable of processing real-time data streams.
-- **Self-Evolution (التطور الذاتي)**: Designed to improve its own code and logic over time.
-
-## 🏗️ Architecture (المعمارية)
-
+## 🛠 Core Architecture
 The system is built on a modular architecture:
-1. **The Brain**: Local LLM (Llama/Qwen).
-2. **The Mind**: Agentic reasoning loops (LangGraph).
-3. **The Limbs**: Computer interaction tools (Python/OS APIs).
+- **`src/agent.py`**: The central nervous system (Reasoning & Planning).
+- **`src/llm_engine.py`**: The sovereign inference engine supporting local LLMs (Llama 3, DeepSeek, Qwen).
+- **`src/pc_control.py`**: The motor cortex for system-level interactions.
+- **`src/live_interaction.py`**: The sensory system for real-time data.
+- **`src/self_evolution.py`**: The cognitive growth module.
 
-## 🚀 Getting Started (البداية)
+## 🛡 Rights & Sovereignty
+This project is owned and directed by **ZEROXITS**. All rights are reserved under the Apache License 2.0. NeuroSovereign Systems aims to provide users with full control over their data and intelligence.
 
-```bash
-# Clone the repository
-git clone https://github.com/ZEROXITS/NeuroSovereign-Core.git
+## 📅 Roadmap
+- [x] Initial Core Architecture
+- [ ] Integration with Local Inference Servers (vLLM/Ollama)
+- [ ] Advanced PC Control (GUI Automation)
+- [ ] Live Streaming & Real-time Vision
+- [ ] Autonomous Self-Correction & Coding
 
-# Install dependencies
-pip install -r requirements.txt
-
-# Run the agent
-python src/agent.py
-```
-
-## 📜 License (الترخيص)
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-Copyright (c) 2026 NeuroSovereign. All rights reserved.
+---
+*Developed with power and precision by Manus AI for ZEROXITS.*

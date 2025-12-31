@@ -1,77 +1,107 @@
 import os
 import json
+import time
 from typing import List, Dict, Any
 try:
     from .pc_control import PCControlModule
+    from .llm_engine import LocalLLMEngine
 except ImportError:
     from pc_control import PCControlModule
+    from llm_engine import LocalLLMEngine
 
 class NeuroSovereignAgent:
     """
-    The core agent class for NeuroSovereign.
-    Designed to be independent, autonomous, and capable of computer interaction.
+    The core agent class for NeuroSovereign Systems.
+    Designed for high-level reasoning, autonomous planning, and tool execution.
     """
-    def __init__(self, model_name: str = "Llama-3.3-70B-Instruct"):
+    def __init__(self, model_name: str = "DeepSeek-V3"):
         self.name = "NeuroSovereign"
         self.pc_control = PCControlModule()
-        self.model_name = model_name
+        self.llm = LocalLLMEngine(model_name=model_name)
         self.memory = []
-        self.tools = self._load_tools()
-        print(f"Initialized {self.name} with model {self.model_name}")
+        self.max_iterations = 10
+        print(f"[*] {self.name} Agent Core Online. Model: {model_name}")
 
-    def _load_tools(self) -> List[Dict[str, Any]]:
-        """Loads the available tools for the agent."""
-        return [
-            {"name": "execute_shell", "description": "Executes a shell command on the host system."},
-            {"name": "pc_control_click", "description": "Simulates a mouse click at specific coordinates (x, y)."},
-            {"name": "pc_control_type", "description": "Simulates keyboard typing of a string."},
-            {"name": "browser_control", "description": "Interacts with the web browser (navigation, clicking, typing)."},
-            {"name": "pc_control", "description": "Simulates mouse and keyboard inputs for desktop applications."},
-            {"name": "live_data_stream", "description": "Connects to real-time data sources for live interaction."}
-        ]
+    def _get_system_prompt(self) -> str:
+        return """You are NeuroSovereign, a sovereign and autonomous AI agent. 
+Your goal is to assist the user by executing complex tasks across the system.
+You have access to tools for PC control, shell execution, and web browsing.
+Always think step-by-step. Plan your actions, execute them, and reflect on the results.
+You are independent and do not rely on external centralized services.
+"""
 
-    def think(self, user_input: str) -> str:
-        """
-        The reasoning loop: Analyzes input, plans actions, and executes them.
-        In a real implementation, this would call a local LLM inference engine.
-        """
-        print(f"Analyzing input: {user_input}")
-        # Step 1: Analyze and Plan
-        plan = self._create_plan(user_input)
+    def run(self, task: str):
+        """Main execution loop (Think-Act-Observe)."""
+        print(f"\n[Task]: {task}")
+        self.memory.append({"role": "user", "content": task})
         
-        # Step 2: Execute Plan
-        result = self._execute_plan(plan)
+        for i in range(self.max_iterations):
+            print(f"\n[Iteration {i+1}] Thinking...")
+            
+            # 1. Think & Plan
+            prompt = self._build_prompt()
+            response = self.llm.generate_response(prompt, self._get_system_prompt())
+            
+            print(f"[Thought]: {response}")
+            
+            # 2. Parse Action (Simplified for now)
+            action = self._parse_action(response)
+            if not action or action['name'] == 'final_answer':
+                print(f"\n[Final Answer]: {response}")
+                break
+                
+            # 3. Execute Action
+            print(f"[Action]: Executing {action['name']} with {action['params']}")
+            observation = self._execute_tool(action['name'], action['params'])
+            
+            print(f"[Observation]: {observation}")
+            self.memory.append({"role": "assistant", "content": response})
+            self.memory.append({"role": "system", "content": f"Observation: {observation}"})
+
+    def _build_prompt(self) -> str:
+        history = ""
+        for m in self.memory[-5:]: # Last 5 interactions
+            history += f"{m['role']}: {m['content']}\n"
         
-        # Step 3: Reflect and Respond
-        response = self._generate_response(result)
-        return response
+        return f"""Current History:
+{history}
 
-    def _create_plan(self, task: str) -> List[str]:
-        """Decomposes a complex task into smaller steps."""
-        print("Creating strategic plan...")
-        # Mock planning logic
-        return [f"Step 1: Analyze {task}", "Step 2: Select appropriate tool", "Step 3: Execute and verify"]
+Available Tools:
+- execute_shell(command: str): Run a terminal command.
+- pc_control_click(x: int, y: int): Click on screen.
+- pc_control_type(text: str): Type text.
+- final_answer(text: str): Provide the final result to the user.
 
-    def _execute_plan(self, plan: List[str]) -> str:
-        """Executes the steps in the plan."""
-        for step in plan:
-            # Mock execution logic for demonstration
-            if "pc_control_click" in step:
-                print(f"Executing PC Control Action: Click at (500, 500)")
-                # self.pc_control.move_and_click(500, 500)
-            elif "pc_control_type" in step:
-                print(f"Executing PC Control Action: Typing 'Hello World'")
-                # self.pc_control.type_text("Hello World")
-            else:
-                print(f"Executing: {step}")
-            print(f"Executing: {step}")
-        return "Task completed successfully."
+Format your response as:
+Thought: <your reasoning>
+Action: <tool_name>(<params>)
+"""
 
-    def _generate_response(self, result: str) -> str:
-        """Generates the final response to the user."""
-        return f"NeuroSovereign has completed the task. Result: {result}"
+    def _parse_action(self, response: str) -> Dict:
+        if "Action:" in response:
+            action_line = response.split("Action:")[1].strip()
+            if "(" in action_line and ")" in action_line:
+                name = action_line.split("(")[0]
+                params_str = action_line.split("(")[1].split(")")[0]
+                # Simple param parsing
+                params = {}
+                if params_str:
+                    if ":" in params_str: # dict-like
+                        try: params = json.loads(params_str.replace("'", "\""))
+                        except: params = {"raw": params_str}
+                    else:
+                        params = {"cmd": params_str.strip("'\"")}
+                return {"name": name, "params": params}
+        return {"name": "final_answer", "params": {}}
+
+    def _execute_tool(self, name: str, params: Dict) -> str:
+        if name == "execute_shell":
+            cmd = params.get("cmd")
+            return os.popen(cmd).read()
+        elif name.startswith("pc_control"):
+            return self.pc_control.execute(name, params)
+        return f"Unknown tool: {name}"
 
 if __name__ == "__main__":
     agent = NeuroSovereignAgent()
-    user_query = "Open the browser and search for the latest AI trends."
-    print(agent.think(user_query))
+    agent.run("Create a new directory named 'Sovereign_Data' and list the files.")
